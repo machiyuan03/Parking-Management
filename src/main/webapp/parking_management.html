@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Parking Management System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+        .opeBtn{
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Parking Management System</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Location</th>
+            <th scope="col">Small Spot</th>
+            <th scope="col">Medium Spot</th>
+            <th scope="col">Large Spot</th>
+            <th scope="col">Operation</th>
+        </tr>
+        </thead>
+        <tbody id="detail">
+
+        </tbody>
+    </table>
+    <button type="button"
+            class="btn btn-primary opeBtn"
+            data-toggle="modal"
+            data-target="#myModal"
+            onclick="addDetail()"
+            >
+        Add</button>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="title">Title</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="parking-id" class="control-label">ID:</label>
+                    <input type="text" class="form-control" id="parking-id" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="parking-location" class="control-label">Location:</label>
+                    <input type="text" class="form-control" id="parking-location">
+                </div>
+
+                <div class="form-group">
+                    <label for="parking-smallSpot" class="control-label">Small Spot:</label>
+                    <input type="text" class="form-control" id="parking-smallSpot">
+                </div>
+
+                <div class="form-group">
+                    <label for="parking-MediSpot" class="control-label">Medium Spot:</label>
+                    <input type="text" class="form-control" id="parking-MediSpot">
+                </div>
+
+                <div class="form-group">
+                    <label for="parking-LargeSpot" class="control-label">Large Spot:</label>
+                    <input type="text" class="form-control" id="parking-LargeSpot">
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        onclick="saveItem()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    let parkingDetails = [
+        {id:1, location:'Kent St', sSpot: 100, mSpot: 350, lSpot: 50},
+        {id:2, location:'UTS', sSpot: 100, mSpot: 350, lSpot: 50},
+        {id:3, location:'Broadway', sSpot: 100, mSpot: 350, lSpot: 50}
+    ];
+    let modal_mode = "Add";
+    refresh();
+
+
+    function addDetail(){
+        $('#title').text("Add detail")
+        $('#parking-id').val(parkingDetails.length+1);
+        $('#parking-location').val("");
+        $('#parking-smallSpot').val("");
+        $('#parking-MediSpot').val("");
+        $('#parking-LargeSpot').val("");
+        modal_mode = "Add"
+    }
+
+    function refresh(){
+        if(parkingDetails.length == 0){
+            $('.table').hide()
+            return;
+        }else{
+            $('.table').show()
+        }
+
+        let parkingTable = document.getElementById('detail');
+        parkingTable.innerHTML  = "";
+        
+        parkingDetails.forEach(unit =>{
+            const row = `<tr>
+        <td>${unit.id}</td>
+        <td>${unit.location}</td>
+        <td>${unit.sSpot}</td>
+        <td>${unit.mSpot}</td>
+        <td>${unit.lSpot}</td>
+        <td>
+
+            <button type="button"
+            class="btn btn-primary opeBtn"
+            data-toggle="modal"
+            data-target="#myModal"
+            onclick="editItem(${unit.id})"
+            >Edit
+            </button>
+
+            <button type="button" class="btn btn-danger opeBtn" onclick="delItem(${unit.id})">Delete</button>
+        </td>
+        </tr>`;
+            parkingTable.innerHTML += row;
+        })
+    }
+
+    function delItem(id){
+        parkingDetails = parkingDetails.filter(item=> item.id != id)
+        console.log(parkingDetails)
+        refresh()
+    }
+    function editItem(id){
+        let item = parkingDetails.filter(item=> item.id == id)[0]
+
+        
+        $('#title').text("Edit detail");
+        $('#parking-id').val(id);
+        $('#parking-location').val(item.location);
+        $('#parking-smallSpot').val(item.sSpot);
+        $('#parking-MediSpot').val(item.mSpot);
+        $('#parking-LargeSpot').val(item.lSpot);
+        modal_mode = "Edit"
+    }
+    function saveItem(){
+        if(modal_mode === "Add"){
+            parkingDetails.push(
+                {
+                    id:$('#parking-id').val(),
+                    location: $('#parking-location').val(),
+                    sSpot: $('#parking-smallSpot').val(),
+                    mSpot:  $('#parking-MediSpot').val(),
+                    lSpot: $('#parking-LargeSpot').val()
+                }
+            )
+        }else if(modal_mode ==="Edit"){
+            let index = parkingDetails.findIndex(unit => unit.id == $('#parking-id').val() );
+            if(index >= 0){
+                parkingDetails[index].location = $('#parking-location').val()
+                parkingDetails[index].sSpot = $('#parking-smallSpot').val()
+                parkingDetails[index].mSpot = $('#parking-MediSpot').val()
+                parkingDetails[index].lSpot = $('#parking-LargeSpot').val()
+            }
+        }
+        refresh()
+        $('#myModal').hide()
+    }
+</script>
+
+</html>

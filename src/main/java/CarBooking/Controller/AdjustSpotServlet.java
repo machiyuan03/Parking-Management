@@ -13,7 +13,7 @@ public class AdjustSpotServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp){
         try{
-
+            int id = Integer.parseInt(req.getParameter("id"));
             String location = req.getParameter("location");
             double priceRatePH = Double.parseDouble(req.getParameter("priceRatePH"));
             double priceRatePD = Double.parseDouble(req.getParameter("priceRatePD"));
@@ -24,11 +24,11 @@ public class AdjustSpotServlet extends HttpServlet {
             int passAvailable = Integer.parseInt(req.getParameter("passAvailable"));
             int discountAvailable = Integer.parseInt(req.getParameter("discountAvailable"));
 
-            Spot spot = new Spot(location, priceRatePH, priceRatePD, priceRateON,
+            Spot spot = new Spot(id, location, priceRatePH, priceRatePD, priceRateON,
                     sSpot, mSpot, lSpot, passAvailable, discountAvailable);
 
             SpotDBManager spotDBManager = new SpotDBManager();
-            spotDBManager.addSpot(spot);
+            spotDBManager.adjustSpot(spot);
             
         } catch(Exception e) {
             e.printStackTrace();

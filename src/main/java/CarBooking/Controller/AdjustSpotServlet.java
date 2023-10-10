@@ -26,6 +26,9 @@ public class AdjustSpotServlet extends HttpServlet {
 
             Spot spot = new Spot(location, priceRatePH, priceRatePD, priceRateON,
                     sSpot, mSpot, lSpot, passAvailable, discountAvailable);
+
+            SpotDBManager spotDBManager = new SpotDBManager();
+            spotDBManager.addSpot(spot);
             
         } catch(Exception e) {
             e.printStackTrace();

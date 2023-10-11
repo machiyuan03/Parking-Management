@@ -19,7 +19,7 @@ public class SpotDBManager {
     public void addSpot(Spot spot) throws SQLException {
         String query = "INSERT INTO Spot (Location, PriceRatePH, PriceRatePD, PriceRateON, SSpot, MSpot, LSpot, PassAvailable, DiscountAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement pstmt = conn.prepareStatement(query);
-        pstmt.setString(1, spot.getLocation());
+//        pstmt.setString(1, spot.getLocation());
         pstmt.setDouble(2, spot.getPriceRatePH());
         pstmt.setDouble(3, spot.getPriceRatePD());
         pstmt.setDouble(4, spot.getPriceRateON());

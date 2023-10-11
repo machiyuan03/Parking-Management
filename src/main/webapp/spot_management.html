@@ -158,15 +158,26 @@
 <script>
      var spotsList = ''
 
+     //LOAD THE SPOTS LIST
      function getTable() {
          axios.get('/ASD-Project-1.0-SNAPSHOT/getAllSpot')
              .then(function(response) {
                  spotsList = response.data;
                  let spots = response.data;
+
                  // Clear the table body
                  $('#spotTableBody').empty();
                  let tableHtml = '';
                  for (let spot of spots) {
+                     let passAvailable = "NO";
+                     let discountAvailable = "NO";
+
+                     if(spot.passAvailable == 1){
+                         passAvailable = "YES"
+                     }
+                     if(spot.discountAvailable == 1){
+                         discountAvailable = "YES";
+                     }
                      tableHtml += `
                         <tr>
                             <td>${spot.location}</td>
@@ -176,8 +187,8 @@
                             <td>${spot.sSpot}</td>
                             <td>${spot.mSpot}</td>
                             <td>${spot.lSpot}</td>
-                            <td>${spot.passAvailable}</td>
-                            <td>${spot.discountAvailable}</td>
+                            <td>${passAvailable}</td>
+                            <td>${discountAvailable}</td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <button onclick="editSpot(${spot.id})" class="btn btn-primary">Edit</button>
@@ -193,10 +204,12 @@
              });
      }
 
+     //LOAD THE SPOTS LIST WHEN PROGRAM START
     $(document).ready(function() {
         getTable()
     });
 
+     //POP UP EDIT SHOT WINDOW
     function editSpot(spotId) {
         let spot = spotsList.find(s => s.id == spotId);
         // Populate the modal inputs with the spot data
@@ -215,7 +228,7 @@
         $('#editSpotModal').modal('show');
     }
 
-
+    //SAVE THE INFO ENTERED IN EDIT SPOT WINDOW
      function saveEditedSpot() {
          let id = $('#editSpotId').val();
          let location = $('#editLocation').val();
@@ -228,32 +241,37 @@
          let passAvailable = $('#editPassAvailable').val();
          let discountAvailable = $('#editDiscountAvailable').val();
 
-         // Construct x-www-form-urlencoded data
-         const formData = new URLSearchParams();
-         formData.append('id', id);
-         formData.append('location', location);
-         formData.append('priceRatePH', priceRatePH);
-         formData.append('priceRatePD', priceRatePD);
-         formData.append('priceRateON', priceRateON);
-         formData.append('sSpot', sSpot);
-         formData.append('mSpot', mSpot);
-         formData.append('lSpot', lSpot);
-         formData.append('passAvailable', passAvailable);
-         formData.append('discountAvailable', discountAvailable);
+         if(priceRatePH < 0 || priceRatePD < 0 || priceRateON < 0 || sSpot <0 || mSpot < 0 || lSpot < 0){ //validation check
+             alert("Invalid input");
+         }else{
+             // Construct x-www-form-urlencoded data
+             const formData = new URLSearchParams();
+             formData.append('id', id);
+             formData.append('location', location);
+             formData.append('priceRatePH', priceRatePH);
+             formData.append('priceRatePD', priceRatePD);
+             formData.append('priceRateON', priceRateON);
+             formData.append('sSpot', sSpot);
+             formData.append('mSpot', mSpot);
+             formData.append('lSpot', lSpot);
+             formData.append('passAvailable', passAvailable);
+             formData.append('discountAvailable', discountAvailable);
 
-         // Send the request
-         axios.post('/ASD-Project-1.0-SNAPSHOT/adjustSpot', formData.toString(), {
-             headers: {
-                 'Content-Type': 'application/x-www-form-urlencoded'
-             }
-         })
-             .then(function(response) {
-                 $('#editSpotModal').modal('hide');
-                 getTable()
+             // Send the request
+             axios.post('/ASD-Project-1.0-SNAPSHOT/adjustSpot', formData.toString(), {
+                 headers: {
+                     'Content-Type': 'application/x-www-form-urlencoded'
+                 }
              })
-             .catch(function(error) {
-                 console.log("Error updating spot:", error);
-             });
+                 .then(function(response) {
+                     $('#editSpotModal').modal('hide');
+                     getTable()
+                 })
+                 .catch(function(error) {
+                     console.log("Error updating spot:", error);
+                 });
+         }
+
      }
 
      function deleteSpot(spotId) {
@@ -291,32 +309,39 @@
          let passAvailable = $('#addPassAvailable').val();
          let discountAvailable = $('#addDiscountAvailable').val();
 
-         // Construct x-www-form-urlencoded data
-         const formData = new URLSearchParams();
-         formData.append('location', location);
-         formData.append('priceRatePH', priceRatePH);
-         formData.append('priceRatePD', priceRatePD);
-         formData.append('priceRateON', priceRateON);
-         formData.append('sSpot', sSpot);
-         formData.append('mSpot', mSpot);
-         formData.append('lSpot', lSpot);
-         formData.append('passAvailable', passAvailable);
-         formData.append('discountAvailable', discountAvailable);
+         if(priceRatePH < 0 || priceRatePD < 0 || priceRateON < 0 || sSpot <0 || mSpot < 0 || lSpot < 0){ //validation check
+             alert("Invalid input");
+         }else{
+             // Construct x-www-form-urlencoded data
+             const formData = new URLSearchParams();
+             formData.append('location', location);
+             formData.append('priceRatePH', priceRatePH);
+             formData.append('priceRatePD', priceRatePD);
+             formData.append('priceRateON', priceRateON);
+             formData.append('sSpot', sSpot);
+             formData.append('mSpot', mSpot);
+             formData.append('lSpot', lSpot);
+             formData.append('passAvailable', passAvailable);
+             formData.append('discountAvailable', discountAvailable);
 
-         // Send the request
-         axios.post('/ASD-Project-1.0-SNAPSHOT/addSpot', formData.toString(), {
-             headers: {
-                 'Content-Type': 'application/x-www-form-urlencoded'
-             }
-         })
-             .then(function(response) {
-                 $('#addSpotModal').modal('hide');
-                 getTable()
+             // Send the request
+             axios.post('/ASD-Project-1.0-SNAPSHOT/addSpot', formData.toString(), {
+                 headers: {
+                     'Content-Type': 'application/x-www-form-urlencoded'
+                 }
              })
-             .catch(function(error) {
-                 console.log("Error adding spot:", error);
-             });
+                 .then(function(response) {
+                     $('#addSpotModal').modal('hide');
+                     getTable()
+                 })
+                 .catch(function(error) {
+                     console.log("Error adding spot:", error);
+                 });
+         }
+
+
      }
+
 
 
 </script>

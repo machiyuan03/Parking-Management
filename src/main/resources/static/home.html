@@ -27,6 +27,14 @@
             }
         }
     </script>
+    <style>
+        .form-check-inline {
+            margin-right: 20px;
+        }
+        .btn-secondary {
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body onload="displayUserName()">
 <!-- Navigation bar -->
@@ -42,10 +50,33 @@
         <tr>
             <th>ID</th>
             <th>Location</th>
+            <th>Price/hr</th>
+            <th>Price/day</th>
+            <th>Price/night</th>
+            <th>S Spot</th>
+            <th>M Spot</th>
+            <th>L Spot</th>
+            <th>Pass Available</th>
+            <th>Discount Available</th>
         </tr>
         </thead>
         <tbody></tbody>
     </table>
+
+    <!-- Add this section just above the "spotsTable" -->
+    <div class="mt-4 mb-3">
+        <h4>Filter Options:</h4>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="filterPassAvailable">
+            <label class="form-check-label" for="filterPassAvailable">Show only spots with Pass Available</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="filterDiscountAvailable">
+            <label class="form-check-label" for="filterDiscountAvailable">Show only spots with Discount Available</label>
+        </div>
+        <button class="btn btn-secondary ml-3" onclick="applyFilters()">Apply Filters</button>
+    </div>
+
 
     <h2>Reserve a Spot</h2>
     <form style="margin-bottom: 16px" id="reservationForm">
@@ -97,7 +128,7 @@
                 <form id="editReservationForm">
                     <div class="form-group">
                         <label for="editSpotId">Edit Spot id:</label>
-                        <input type="number" class="form-control" id="editSpotId"></input>
+                        <input class="form-control" id="editSpotId" disabled readonly>
                     </div>
 
                     <div class="form-group">
@@ -119,8 +150,47 @@
         </div>
     </div>
 </div>
-<!--<button class="btn btn-warning btn-edit" data-id="${reservation.reservationId}">Edit</button>-->
+
 <script>
+    let currentReservationId = null;
+
+    function applyFilters() {
+        const filterPass = document.getElementById('filterPassAvailable').checked;
+        const filterDiscount = document.getElementById('filterDiscountAvailable').checked;
+
+        // Fetch all Spots
+        axios.get('/getAllSpot')
+            .then(response => {
+                const spots = response.data;
+                let rows = '';
+                spots.forEach(spot => {
+                    if ((filterPass && spot.passAvailable !== 1) ||
+                        (filterDiscount && spot.discountAvailable !== 1)) {
+                        // Skip this spot as it doesn't meet the filter criteria
+                        return;
+                    }
+                    rows += `
+                    <tr>
+                        <td>${spot.id}</td>
+                        <td>${spot.location}</td>
+                        <td>${spot.priceRatePH}</td>
+                        <td>${spot.priceRatePD}</td>
+                        <td>${spot.priceRateON}</td>
+                        <td>${spot.sSpot}</td>
+                        <td>${spot.mSpot}</td>
+                        <td>${spot.lSpot}</td>
+                        <td>${spot.passAvailable === 1 ? 'Yes' : 'No'}</td>
+                        <td>${spot.discountAvailable === 1 ? 'Yes' : 'No'}</td>
+                    </tr>
+                `;
+                });
+                document.querySelector('#spotsTable tbody').innerHTML = rows;
+            })
+            .catch(error => {
+                console.error('Error fetching spots:', error);
+            });
+    }
+
     function fetchAndDisplayReservations() {
         axios.get('/getReservationsByUser', {params: {userId: localStorage.getItem('userId')}})
             .then(response => {
@@ -136,6 +206,7 @@
                 // Using Promise.all to wait for all spot details to be fetched
                 return Promise.all(fetchSpotPromises).then(spotResponses => {
                     spotResponses.forEach((spotResponse, index) => {
+
                         const spot = spotResponse.data;
                         const reservation = reservations[index];
 
@@ -146,6 +217,7 @@
                         <td>${reservation.startTime}</td>
                         <td>${reservation.endTime}</td>
                         <td>
+                            <button class="btn btn-warning btn-edit" data-id="${reservation.reservationId}">Edit</button>
                             <button class="btn btn-danger btn-delete" data-id="${reservation.reservationId}">Delete</button>
                         </td>
                     </tr>
@@ -178,6 +250,14 @@
                         <tr>
                             <td>${spot.id}</td>
                             <td>${spot.location}</td>
+                            <td>${spot.priceRatePH}</td>
+                            <td>${spot.priceRatePD}</td>
+                            <td>${spot.priceRateON}</td>
+                            <td>${spot.sSpot}</td>
+                            <td>${spot.mSpot}</td>
+                            <td>${spot.lSpot}</td>
+                            <td>${spot.passAvailable === 1 ? 'Yes' : 'No'}</td>
+                            <td>${spot.discountAvailable === 1 ? 'Yes' : 'No'}</td>
                         </tr>
                     `;
                     selectOptions += `<option value="${spot.id}">${spot.location}</option>`;
@@ -195,8 +275,8 @@
 
             const userId = localStorage.getItem('userId');
             const spotId = $('#spotId').val();
-            const startTime = new Date($('#startTime').val());
-            const endTime = new Date($('#endTime').val());
+            const startTime = $('#startTime').val();
+            const endTime = $('#endTime').val();
 
             // Check if endTime is earlier than startTime
             if (endTime <= startTime) {
@@ -208,8 +288,8 @@
                 reservationId: 0,
                 userId: userId,
                 spotId: spotId,
-                startTime: startTime.toISOString(),
-                endTime: endTime.toISOString()
+                startTime: startTime,
+                endTime: endTime
             };
 
             axios.post('/addReservation', reservationData)
@@ -227,14 +307,15 @@
         // Edit reservation
         $(document).on('click', '.btn-edit', function() {
             const reservationId = $(this).data('id');
+            currentReservationId = reservationId;
 
             // Fetch the reservation details
             axios.get('/findReservationById', {params: {reservationId: reservationId}})
                 .then(response => {
                     const reservation = response.data;
                     $('#editSpotId').val(reservation.spotId);
-                    $('#editStartTime').val(new Date(reservation.startTime).toISOString().slice(0, -1));
-                    $('#editEndTime').val(new Date(reservation.endTime).toISOString().slice(0, -1));
+                    $('#editStartTime').val(reservation.startTime);
+                    $('#editEndTime').val(reservation.endTime);
 
                     // Show the modal
                     $('#editModal').modal('show');
@@ -247,10 +328,10 @@
         // Save changes in the edit modal
         $('#btnSaveChanges').click(function() {
             const updatedData = {
-                reservationId: reservationId,  // the reservationId we fetched earlier
+                reservationId: currentReservationId,
                 spotId: $('#editSpotId').val(),
-                startTime: new Date($('#editStartTime').val()).toISOString(),
-                endTime: new Date($('#editEndTime').val()).toISOString()
+                startTime: $('#editStartTime').val(),
+                endTime: $('#editEndTime').val()
             };
 
             axios.post('/modifyReservation', updatedData)

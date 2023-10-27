@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spot List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Axios library -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>All Spots</h2>
+
+    <button type="button" class="btn btn-primary" onclick="showAddSpot()" style="margin-bottom: 5px">
+        Add New Spot
+    </button>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Location</th>
+            <th>Price Rate per Hour</th>
+            <th>Price Rate per Day</th>
+            <th>Price Rate Overnight</th>
+            <th>Small Spots</th>
+            <th>Medium Spots</th>
+            <th>Large Spots</th>
+            <th>Passes Available</th>
+            <th>Discounts Available</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="spotTableBody">
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit Spot Modal -->
+<div class="modal fade" id="editSpotModal" tabindex="-1" role="dialog" aria-labelledby="editSpotModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSpotModalLabel">Edit Spot</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editSpotId">
+                <div class="form-group">
+                    <label for="editLocation">Location:</label>
+                    <input type="text" id="editLocation" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editPriceRatePH">Price Rate per Hour:</label>
+                    <input type="number" id="editPriceRatePH" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editPriceRatePD">Price Rate per Day:</label>
+                    <input type="number" id="editPriceRatePD" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editPriceRateON">Price Rate Overnight:</label>
+                    <input type="number" id="editPriceRateON" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editSSpot">Small Spots:</label>
+                    <input type="number" id="editSSpot" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editMSpot">Medium Spots:</label>
+                    <input type="number" id="editMSpot" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editLSpot">Large Spots:</label>
+                    <input type="number" id="editLSpot" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editPassAvailable">Passes Available:</label>
+                    <input type="number" id="editPassAvailable" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editDiscountAvailable">Discounts Available:</label>
+                    <input type="number" id="editDiscountAvailable" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditedSpot()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Spot Modal -->
+<div class="modal fade" id="addSpotModal" tabindex="-1" role="dialog" aria-labelledby="addSpotModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSpotModalLabel">Add Spot</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="addLocation">Location:</label>
+                    <input type="text" id="addLocation" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="addPriceRatePH">Price Rate per Hour:</label>
+                    <input type="number" id="addPriceRatePH" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="addPriceRatePD">Price Rate per Day:</label>
+                    <input type="number" id="addPriceRatePD" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="addPriceRateON">Price Rate Overnight:</label>
+                    <input type="number" id="addPriceRateON" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="addSSpot">Small Spots:</label>
+                    <input type="number" id="addSSpot" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="addMSpot">Medium Spots:</label>
+                    <input type="number" id="addMSpot" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="addLSpot">Large Spots:</label>
+                    <input type="number" id="addLSpot" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="addPassAvailable">Passes Available:</label>
+                    <input type="number" id="addPassAvailable" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="addDiscountAvailable">Discounts Available:</label>
+                    <input type="number" id="addDiscountAvailable" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="addSpot()">Add Spot</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+     var spotsList = ''
+
+     //LOAD THE SPOTS LIST
+     function getTable() {
+         axios.get('/getAllSpot')
+             .then(function(response) {
+                 spotsList = response.data;
+                 let spots = response.data;
+
+                 // Clear the table body
+                 $('#spotTableBody').empty();
+                 let tableHtml = '';
+                 for (let spot of spots) {
+                     let passAvailable = "NO";
+                     let discountAvailable = "NO";
+
+                     if(spot.passAvailable == 1){
+                         passAvailable = "YES"
+                     }
+                     if(spot.discountAvailable == 1){
+                         discountAvailable = "YES";
+                     }
+                     tableHtml += `
+                        <tr>
+                            <td>${spot.location}</td>
+                            <td>${spot.priceRatePH}</td>
+                            <td>${spot.priceRatePD}</td>
+                            <td>${spot.priceRateON}</td>
+                            <td>${spot.sSpot}</td>
+                            <td>${spot.mSpot}</td>
+                            <td>${spot.lSpot}</td>
+                            <td>${passAvailable}</td>
+                            <td>${discountAvailable}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button onclick="editSpot(${spot.id})" class="btn btn-primary">Edit</button>
+                                    <button onclick="deleteSpot(${spot.id})" class="btn btn-danger">Delete</button>
+                                </div>
+                            </td>
+                        </tr>`;
+                 }
+                 $('#spotTableBody').html(tableHtml);
+             })
+             .catch(function(error) {
+                 console.log("Error fetching spots:", error);
+             });
+     }
+
+     //LOAD THE SPOTS LIST WHEN PROGRAM START
+    $(document).ready(function() {
+        getTable()
+    });
+
+     //POP UP EDIT SHOT WINDOW
+    function editSpot(spotId) {
+        let spot = spotsList.find(s => s.id == spotId);
+        // Populate the modal inputs with the spot data
+        $('#editSpotId').val(spot.id);
+        $('#editLocation').val(spot.location);
+        $('#editPriceRatePH').val(spot.priceRatePH);
+        $('#editPriceRatePD').val(spot.priceRatePD);
+        $('#editPriceRateON').val(spot.priceRateON);
+        $('#editSSpot').val(spot.sSpot);
+        $('#editMSpot').val(spot.mSpot);
+        $('#editLSpot').val(spot.lSpot);
+        $('#editPassAvailable').val(spot.passAvailable);
+        $('#editDiscountAvailable').val(spot.discountAvailable);
+
+        // Show the modal
+        $('#editSpotModal').modal('show');
+    }
+
+    //SAVE THE INFO ENTERED IN EDIT SPOT WINDOW
+     function saveEditedSpot() {
+         let id = $('#editSpotId').val();
+         let location = $('#editLocation').val();
+         let priceRatePH = $('#editPriceRatePH').val();
+         let priceRatePD = $('#editPriceRatePD').val();
+         let priceRateON = $('#editPriceRateON').val();
+         let sSpot = $('#editSSpot').val();
+         let mSpot = $('#editMSpot').val();
+         let lSpot = $('#editLSpot').val();
+         let passAvailable = $('#editPassAvailable').val();
+         let discountAvailable = $('#editDiscountAvailable').val();
+
+         if (priceRatePH < 0 || priceRatePD < 0 || priceRateON < 0 || sSpot < 0 || mSpot < 0 || lSpot < 0 ||
+             (passAvailable != 0 && passAvailable != 1) || (discountAvailable != 0 && discountAvailable != 1)) {
+             alert("Invalid input");
+         }  else{
+             // Construct x-www-form-urlencoded data
+             const formData = new URLSearchParams();
+             formData.append('id', id);
+             formData.append('location', location);
+             formData.append('priceRatePH', priceRatePH);
+             formData.append('priceRatePD', priceRatePD);
+             formData.append('priceRateON', priceRateON);
+             formData.append('sSpot', sSpot);
+             formData.append('mSpot', mSpot);
+             formData.append('lSpot', lSpot);
+             formData.append('passAvailable', passAvailable);
+             formData.append('discountAvailable', discountAvailable);
+
+             // Send the request
+             axios.post('/adjustSpot', formData.toString(), {
+                 headers: {
+                     'Content-Type': 'application/x-www-form-urlencoded'
+                 }
+             })
+                 .then(function(response) {
+                     $('#editSpotModal').modal('hide');
+                     getTable()
+                 })
+                 .catch(function(error) {
+                     console.log("Error updating spot:", error);
+                 });
+         }
+
+     }
+
+     function deleteSpot(spotId) {
+         // Construct x-www-form-urlencoded data
+         const formData = new URLSearchParams();
+         formData.append('id', spotId);
+
+         // Send the request
+         axios.post('/deleteSpot', formData.toString(), {
+             headers: {
+                 'Content-Type': 'application/x-www-form-urlencoded'
+             }
+         })
+             .then(function(response) {
+                 getTable()
+             })
+             .catch(function(error) {
+                 console.log("Error deleting spot:", error);
+             });
+     }
+
+     function showAddSpot(){
+         $('#addSpotModal').modal('show');
+     }
+
+     function addSpot() {
+         // Collect data from input fields
+         let location = $('#addLocation').val();
+         let priceRatePH = $('#addPriceRatePH').val();
+         let priceRatePD = $('#addPriceRatePD').val();
+         let priceRateON = $('#addPriceRateON').val();
+         let sSpot = $('#addSSpot').val();
+         let mSpot = $('#addMSpot').val();
+         let lSpot = $('#addLSpot').val();
+         let passAvailable = $('#addPassAvailable').val();
+         let discountAvailable = $('#addDiscountAvailable').val();
+
+         //validation check
+         if (priceRatePH < 0 || priceRatePD < 0 || priceRateON < 0 || sSpot < 0 || mSpot < 0 || lSpot < 0 ||
+             (passAvailable != 0 && passAvailable != 1) || (discountAvailable != 0 && discountAvailable != 1)) {
+             alert("Invalid input");
+         } else {
+             // Construct x-www-form-urlencoded data
+             const formData = new URLSearchParams();
+             formData.append('location', location);
+             formData.append('priceRatePH', priceRatePH);
+             formData.append('priceRatePD', priceRatePD);
+             formData.append('priceRateON', priceRateON);
+             formData.append('sSpot', sSpot);
+             formData.append('mSpot', mSpot);
+             formData.append('lSpot', lSpot);
+             formData.append('passAvailable', passAvailable);
+             formData.append('discountAvailable', discountAvailable);
+
+             // Send the request
+             axios.post('/addSpot', formData.toString(), {
+                 headers: {
+                     'Content-Type': 'application/x-www-form-urlencoded'
+                 }
+             })
+                 .then(function(response) {
+                     $('#addSpotModal').modal('hide');
+                     getTable();
+                 })
+                 .catch(function(error) {
+                     console.log("Error adding spot:", error);
+                 });
+         }
+     }
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

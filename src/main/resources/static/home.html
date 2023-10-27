@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Axios library -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Function to handle logout
+        function handleLogout() {
+            localStorage.clear(); // Clear the localStorage
+            window.location.href = "/index.html"; // Navigate to index.html
+        }
+
+        // Function to display user's name
+        function displayUserName() {
+            const userName = localStorage.getItem('username');
+            if (userName) {
+                document.getElementById('userNameDisplay').textContent = `Welcome, ${userName}`;
+            }
+        }
+    </script>
+</head>
+<body onload="displayUserName()">
+<!-- Navigation bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <span id="userNameDisplay" class="navbar-brand"></span>
+    <button class="btn btn-danger ml-auto" onclick="handleLogout()">Logout</button>
+</nav>
+
+<div class="container mt-5">
+    <h2>Available Spots</h2>
+    <table class="table table-bordered" id="spotsTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Location</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Reserve a Spot</h2>
+    <form style="margin-bottom: 16px" id="reservationForm">
+        <div class="form-group">
+            <label>Select a Spot:</label>
+            <select class="form-control" id="spotId"></select>
+        </div>
+
+        <div class="form-group">
+            <label for="startTime">Start Time:</label>
+            <input type="datetime-local" class="form-control" id="startTime" required>
+        </div>
+
+        <div class="form-group">
+            <label for="endTime">End Time:</label>
+            <input type="datetime-local" class="form-control" id="endTime" required>
+        </div>
+        <!-- Add more fields as needed -->
+        <button type="submit" class="btn btn-primary">Reserve</button>
+    </form>
+
+    <h2>Your Reservations</h2>
+    <table class="table table-bordered" id="userReservationsTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Location</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- Modal for editing a reservation -->
+<div class="modal" tabindex="-1" id="editModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Reservation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Inside the modal-body in the Edit Modal -->
+            <div class="modal-body">
+                <form id="editReservationForm">
+                    <div class="form-group">
+                        <label for="editSpotId">Edit Spot id:</label>
+                        <input type="number" class="form-control" id="editSpotId"></input>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editStartTime">Start Time:</label>
+                        <input type="datetime-local" class="form-control" id="editStartTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editEndTime">End Time:</label>
+                        <input type="datetime-local" class="form-control" id="editEndTime" required>
+                    </div>
+                    <!-- Add more fields if needed for editing -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSaveChanges">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<button class="btn btn-warning btn-edit" data-id="${reservation.reservationId}">Edit</button>-->
+<script>
+    function fetchAndDisplayReservations() {
+        axios.get('/getReservationsByUser', {params: {userId: localStorage.getItem('userId')}})
+            .then(response => {
+                const reservations = response.data;
+                let rows = '';
+                let fetchSpotPromises = [];
+
+                reservations.forEach(reservation => {
+                    // For each reservation, make a request to get the spot details
+                    fetchSpotPromises.push(axios.get('/findSpotById', {params: {id: reservation.spotId}}));
+                });
+
+                // Using Promise.all to wait for all spot details to be fetched
+                return Promise.all(fetchSpotPromises).then(spotResponses => {
+                    spotResponses.forEach((spotResponse, index) => {
+                        const spot = spotResponse.data;
+                        const reservation = reservations[index];
+
+                        rows += `
+                    <tr>
+                        <td>${reservation.reservationId}</td>
+                        <td>${spot.location}</td>
+                        <td>${reservation.startTime}</td>
+                        <td>${reservation.endTime}</td>
+                        <td>
+                            <button class="btn btn-danger btn-delete" data-id="${reservation.reservationId}">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                    });
+                    $('#userReservationsTable tbody').html(rows);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching reservations or spots:', error);
+            });
+    }
+
+    $(document).ready(function() {
+        // Check user login status
+        if (!localStorage.getItem('userId')) {
+            alert('Please log in first.');
+            // Redirect user to login page
+            window.location.href = '/index.html';
+        }
+
+        // Fetch all Spots
+        axios.get('/getAllSpot')
+            .then(response => {
+                const spots = response.data;
+                let rows = '';
+                let selectOptions = '';
+                spots.forEach(spot => {
+                    rows += `
+                        <tr>
+                            <td>${spot.id}</td>
+                            <td>${spot.location}</td>
+                        </tr>
+                    `;
+                    selectOptions += `<option value="${spot.id}">${spot.location}</option>`;
+                });
+                $('#spotsTable tbody').html(rows);
+                $('#spotId').html(selectOptions);
+            })
+            .catch(error => {
+                console.error('Error fetching spots:', error);
+            });
+
+        // Handle reservation
+        $('#reservationForm').submit(function(event) {
+            event.preventDefault();
+
+            const userId = localStorage.getItem('userId');
+            const spotId = $('#spotId').val();
+            const startTime = new Date($('#startTime').val());
+            const endTime = new Date($('#endTime').val());
+
+            // Check if endTime is earlier than startTime
+            if (endTime <= startTime) {
+                alert('End Time must be after Start Time.');
+                return; // Exit the function to prevent form submission
+            }
+
+            const reservationData = {
+                reservationId: 0,
+                userId: userId,
+                spotId: spotId,
+                startTime: startTime.toISOString(),
+                endTime: endTime.toISOString()
+            };
+
+            axios.post('/addReservation', reservationData)
+                .then(response => {
+                    alert('Reservation successful.');
+                    fetchAndDisplayReservations();
+                })
+                .catch(error => {
+                    alert('Failed to reserve. Try again later.');
+                });
+        });
+
+        fetchAndDisplayReservations();
+
+        // Edit reservation
+        $(document).on('click', '.btn-edit', function() {
+            const reservationId = $(this).data('id');
+
+            // Fetch the reservation details
+            axios.get('/findReservationById', {params: {reservationId: reservationId}})
+                .then(response => {
+                    const reservation = response.data;
+                    $('#editSpotId').val(reservation.spotId);
+                    $('#editStartTime').val(new Date(reservation.startTime).toISOString().slice(0, -1));
+                    $('#editEndTime').val(new Date(reservation.endTime).toISOString().slice(0, -1));
+
+                    // Show the modal
+                    $('#editModal').modal('show');
+                })
+                .catch(error => {
+                    console.error('Error fetching reservation details:', error);
+                });
+        });
+
+        // Save changes in the edit modal
+        $('#btnSaveChanges').click(function() {
+            const updatedData = {
+                reservationId: reservationId,  // the reservationId we fetched earlier
+                spotId: $('#editSpotId').val(),
+                startTime: new Date($('#editStartTime').val()).toISOString(),
+                endTime: new Date($('#editEndTime').val()).toISOString()
+            };
+
+            axios.post('/modifyReservation', updatedData)
+                .then(response => {
+                    alert('Reservation updated successfully.');
+                    $('#editModal').modal('hide');  // Close the modal
+                    fetchAndDisplayReservations();  // Refresh the reservations table
+                })
+                .catch(error => {
+                    alert('Failed to update. Try again later.');
+                });
+        });
+
+        // Delete reservation
+        $(document).on('click', '.btn-delete', function() {
+            const reservationId = $(this).data('id');
+
+            // Using request parameters instead of request body
+            axios.post('/deleteReservation', null, {params: {reservationId: reservationId}})
+                .then(response => {
+                    alert('Reservation deleted successfully.');
+                    // Refresh the reservations table
+                    fetchAndDisplayReservations();
+                })
+                .catch(error => {
+                    alert('Failed to delete. Try again later.');
+                });
+        });
+    });
+</script>
+
+</body>
+</html>

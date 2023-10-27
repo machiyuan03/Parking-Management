@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Registration</title>
+  <!-- Importing Element UI styles via CDN -->
+  <link href="https://unpkg.com/element-ui@2.15.6/lib/theme-chalk/index.css" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+  <el-container style="height: 100vh;">
+    <el-main>
+      <el-tabs v-model="activeTab" @tab-click="handleClick">
+        <el-tab-pane label="Login" name="login">
+          <el-form ref="loginForm" :model="loginForm" label-width="120px">
+            <el-form-item label="Username">
+              <el-input v-model="loginForm.username"></el-input>
+            </el-form-item>
+            <el-form-item label="Password">
+              <el-input type="password" v-model="loginForm.password"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitLogin">Login</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="Register" name="register">
+          <el-form ref="registerForm" :model="registerForm" label-width="120px">
+            <el-form-item label="Username">
+              <el-input v-model="registerForm.username"></el-input>
+            </el-form-item>
+            <el-form-item label="Password">
+              <el-input type="password" v-model="registerForm.password"></el-input>
+            </el-form-item>
+            <el-form-item label="Email">
+              <el-input v-model="registerForm.email"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitRegister">Register</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
+    </el-main>
+  </el-container>
+</div>
+
+<!-- Importing Vue, Element UI, and Axios via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.15.6/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      activeTab: 'login',
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      registerForm: {
+        username: '',
+        password: '',
+        email: ''
+      }
+    },
+    methods: {
+      handleClick(tab) {
+        console.log(tab.name);
+      },
+      submitLogin() {
+        axios.post('/users/login', this.loginForm)
+                .then(response => {
+                  // Handle success here. For example:
+                  console.log(response.data);
+
+                  localStorage.setItem('userId', response.data.userId);
+                  localStorage.setItem('username', response.data.username);
+
+                  window.location.href = 'home.html';
+
+                  alert('Logged in successfully!');
+                })
+                .catch(error => {
+                  // Handle error here
+                  console.error(error);
+                  alert('Login failed!');
+                });
+      },
+      submitRegister() {
+        axios.post('/users/register', this.registerForm)
+                .then(response => {
+                  // Handle success here
+                  console.log(response.data);
+                  alert('Registered successfully!');
+                })
+                .catch(error => {
+                  // Handle error here
+                  console.error(error);
+                  alert('Registration failed!');
+                });
+      }
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.parkingmanagement.dao.ReservationDBManager">
+    <resultMap id="reservationMap" type="com.example.parkingmanagement.model.Reservation">
+        <result column="reservation_id" property="reservationId" />
+        <result column="spot_id" property="spotId" />
+        <result column="user_id" property="userId" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+    </resultMap>
+</mapper>

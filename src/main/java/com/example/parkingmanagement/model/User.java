@@ -1,7 +1,7 @@
 package com.example.parkingmanagement.model;
 
 public class User {
-    private int userId;
+    private int user_id;
     private String username;
     private String password;
     private String email;
@@ -12,7 +12,7 @@ public class User {
     }
 
     public User(int userId, String username, String password, String email, String firstName, String lastName) {
-        this.userId = userId;
+        this.user_id = userId;
         this.username = username;
         this.password = password;
         this.email = email;
@@ -21,11 +21,11 @@ public class User {
     }
 
     public int getUserId() {
-        return userId;
+        return user_id;
     }
 
     public void setUserId(int userId) {
-        this.userId = userId;
+        this.user_id = userId;
     }
 
     public String getUsername() {
@@ -71,7 +71,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
+                "userId=" + user_id +
                 ", username='" + username + '\'' +
                 '}';
     }

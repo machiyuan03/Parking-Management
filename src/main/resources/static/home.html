@@ -329,6 +329,7 @@
         $('#btnSaveChanges').click(function() {
             const updatedData = {
                 reservationId: currentReservationId,
+                userId : localStorage.getItem('userId'),
                 spotId: $('#editSpotId').val(),
                 startTime: $('#editStartTime').val(),
                 endTime: $('#editEndTime').val()

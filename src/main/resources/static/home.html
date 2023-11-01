@@ -277,6 +277,13 @@
             const spotId = $('#spotId').val();
             const startTime = $('#startTime').val();
             const endTime = $('#endTime').val();
+            const currentDate = new Date();
+
+            // Check if startTime is earlier than today
+            if (new Date($('#startTime').val()) < currentDate) {
+                alert('Start Time cannot be earlier than today.');
+                return; // Exit the function to prevent form submission
+            }
 
             // Check if endTime is earlier than startTime
             if (endTime <= startTime) {

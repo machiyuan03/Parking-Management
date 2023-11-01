@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discount Management System</title>
+    <!-- Element UI CSS -->
+    <link href="https://unpkg.com/element-ui@2.15.6/lib/theme-chalk/index.css" rel="stylesheet">
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.4/dist/axios.min.js"></script>
+    <!-- Vue CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!-- Element UI JS -->
+    <script src="https://unpkg.com/element-ui@2.15.6/lib/index.js"></script>
+    <style>
+        #app {
+            max-width: 800px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <h2>Discount Management System</h2>
+    <el-table :data="users" border style="width: 100%; margin-top: 20px;">
+        <el-table-column prop="userId" label="User ID"></el-table-column>
+        <el-table-column prop="username" label="Username"></el-table-column>
+        <el-table-column prop="email" label="Email"></el-table-column>
+        <el-table-column label="Current Discount">
+            <template slot-scope="scope">
+                {{ scope.row.discount_percentage }}% OFF
+            </template>
+        </el-table-column>
+        <el-table-column label="Actions">
+            <template slot-scope="scope">
+                <div class="action-buttons">
+                    <el-button @click="editDiscount(scope.row)" type="primary" size="mini">Edit</el-button>
+                    <el-button @click="removeDiscount(scope.row)" type="danger" size="mini">Remove</el-button>
+                </div>
+            </template>
+        </el-table-column>
+    </el-table>
+
+    <!-- Discount Edit Dialog -->
+    <el-dialog title="Edit Discount" :visible.sync="dialogVisible" width="400px">
+        <el-input v-model="editingDiscount" placeholder="Enter new discount"></el-input>
+        <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="updateDiscount">Confirm</el-button>
+            </span>
+    </el-dialog>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            users: [],
+            dialogVisible: false,
+            editingUser: null,
+            editingDiscount: 0
+        },
+        created() {
+            // Fetch users when component is created
+            this.fetchUsers();
+        },
+        methods: {
+            fetchUsers() {
+                axios.get('/users/getAllUsers').then(response => {
+                    this.users = response.data;
+                });
+            },
+            editDiscount(row) {
+                this.editingUser = row;
+                this.editingDiscount = row.discount_percentage;
+                this.dialogVisible = true;
+            },
+            updateDiscount() {
+                // Update discount for user using API (adjust the URL accordingly)
+                axios.put(`/users/updateDiscount/${this.editingUser.userId}?discountPercentage=${this.editingDiscount}`).then(() => {
+                    this.editingUser.discount_percentage = this.editingDiscount;
+                    this.dialogVisible = false;
+
+                    // Notify success message
+                    this.$notify({
+                        title: 'Success',
+                        message: 'Discount updated successfully!',
+                        type: 'success'
+                    });
+                });
+            },
+            removeDiscount(row) {
+                axios.put(`/users/updateDiscount/${row.userId}?discountPercentage=0`).then(() => {
+                    row.discount_percentage = 0;
+
+                    // Notify success message
+                    this.$notify({
+                        title: 'Success',
+                        message: 'Discount removed successfully!',
+                        type: 'success'
+                    });
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

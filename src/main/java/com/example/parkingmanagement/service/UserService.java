@@ -5,6 +5,8 @@ import com.example.parkingmanagement.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserDBManager userDBManager;
@@ -18,11 +20,15 @@ public class UserService {
         userDBManager.addUser(user);
     }
 
-    public User findUserByUsername(String username) {
-        return userDBManager.findByUsername(username);
+    public List<User> getAllUsers() {
+        return userDBManager.getAllUsers();
     }
 
     public User login(String username, String password) {
         return userDBManager.findByUsernameAndPassword(username, password);
+    }
+
+    public void updateDiscountPercentage(int userId, int discountPercentage) {
+        userDBManager.updateDiscountPercentage(userId, discountPercentage);
     }
 }

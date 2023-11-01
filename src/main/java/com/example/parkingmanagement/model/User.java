@@ -7,6 +7,7 @@ public class User {
     private String email;
     private String firstName;
     private String lastName;
+    private Integer discount_percentage;
 
     public User() {
     }
@@ -66,6 +67,14 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Integer getDiscount_percentage() {
+        return discount_percentage;
+    }
+
+    public void setDiscount_percentage(Integer discount_percentage) {
+        this.discount_percentage = discount_percentage;
     }
 
     @Override

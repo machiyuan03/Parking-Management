@@ -26,7 +26,7 @@ public class ReservationController {
         return reservationService.getReservationsByUser(userId);
     }
 
-    // Fetch reservations by a user ID using request parameter
+    // Fetch all reservations
     @GetMapping("/getAllReservations")
     public List<Reservation> getAllReservations() {
         return reservationService.getAllReservations();

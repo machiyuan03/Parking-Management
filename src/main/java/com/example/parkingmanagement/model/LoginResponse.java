@@ -4,8 +4,6 @@ public class LoginResponse {
     private int userId;
     private String username;
 
-    // 构造函数、getters 和 setters
-
     public LoginResponse(int userId, String username) {
         this.userId = userId;
         this.username = username;

@@ -18,4 +18,7 @@ public interface UserDBManager {
 
     @Update("UPDATE users SET discount_percentage = #{discountPercentage} WHERE user_id = #{userId}")
     void updateDiscountPercentage(@Param("userId") int userId, @Param("discountPercentage") int discountPercentage);
+
+    @Select("SELECT * FROM users WHERE user_id = #{userId}")
+    User getUserById(@Param("userId") int userId);
 }

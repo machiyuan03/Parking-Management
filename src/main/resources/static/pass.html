@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pass Management</title>
+    <!-- Vue 2.0 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+    <!-- Element UI CSS CDN -->
+    <link href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
+    <!-- Element UI JS CDN with locale set to English -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .el-header {
+            background-color: #f8f9fa !important;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .left-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .el-main {
+            max-width: 1200px;
+            min-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header class="navbar">
+            <div class="left-group">
+                <span style="margin-right: 16px; font-size: 1.25rem;">{{ welcomeMessage }}</span>
+                <el-button type="primary" @click="navigateToHome">Reserve a Spot</el-button>
+                <el-button type="primary" @click="navigateToPass">Buy a pass</el-button>
+            </div>
+            <el-button type="danger" @click="handleLogout">Logout</el-button>
+        </el-header>
+
+        <el-main>
+            <h1>Buy Passes</h1>
+            <el-select v-model="selectedPassId" placeholder="Select a pass">
+                <el-option
+                        v-for="item in passes"
+                        :key="item.pass_id"
+                        :label="item.pass_type"
+                        :value="item.pass_id">
+                </el-option>
+            </el-select>
+            <el-date-picker
+                    v-model="purchaseDate"
+                    type="date"
+                    placeholder="Pick a day"
+                    :picker-options="pickerOptions">
+            </el-date-picker>
+            <el-button @click="purchasePass">Buy Pass</el-button>
+
+            <h2>Your Passes ({{ remainingPasses }} passes remaining, next expiry in {{ earliestExpiryTime }} days)</h2>
+            <el-table :data="userPasses">
+                <el-table-column prop="pass_type" label="Pass Type"></el-table-column>
+                <el-table-column label="Purchase Date">
+                    <template slot-scope="scope">
+                        {{ formatDate(scope.row.purchase_date) }}
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="Expiry Date">
+                    <template slot-scope="scope">
+                        {{ formatDate(scope.row.expiry_date) }}
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-main>
+    </el-container>
+</div>
+<script>
+    // Set Element UI's locale to English
+    ELEMENT.locale(ELEMENT.lang.en);
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            passes: [],
+            userPasses: [],
+            userId: localStorage.getItem('userId'), // Fetching userId from localStorage
+            selectedPassId: null,
+            purchaseDate: new Date(),
+            welcomeMessage: '',
+            pickerOptions: {
+                selectableRange: '10:00:00- 23:59:59',
+                disabledDate: (time) => {
+                    let nowData = new Date()
+                    nowData = new Date(nowData.setDate(nowData.getDate() - 1))
+                    return time < nowData
+                }
+            }
+        },
+        mounted() {
+            this.fetchAllPasses();
+            this.fetchUserPasses();
+            this.displayUserName();
+        },
+        computed: {
+            remainingPasses() {
+                return this.userPasses.filter(pass => new Date(pass.expiry_date) > new Date()).length;
+            },
+            earliestExpiryTime() {
+                // Get the earliest expiry date among remaining passes
+                const earliestExpiry = this.userPasses.reduce((earliest, pass) => {
+                    const passExpiry = new Date(pass.expiry_date);
+                    return (passExpiry > new Date() && (!earliest || passExpiry < earliest)) ? passExpiry : earliest;
+                }, null);
+
+                // Calculate the difference in days
+                if (earliestExpiry) {
+                    const diff = earliestExpiry - new Date();
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    return days + 1;
+                }
+                return null;
+            }
+        },
+        methods: {
+            handleLogout() {
+                localStorage.clear();
+                window.location.href = "/index.html";
+            },
+            displayUserName() {
+                const userName = localStorage.getItem('username');
+                if (userName) {
+                    this.welcomeMessage = `Welcome, ${userName}`;
+                }
+            },
+            formatDate(dateString) {
+                const options = {year: 'numeric', month: 'long', day: 'numeric'};
+                return new Date(dateString).toLocaleDateString(undefined, options);
+            },
+            fetchAllPasses() {
+                axios.get('/api/users/passes')
+                    .then(response => {
+                        this.passes = response.data;
+                    });
+            },
+            fetchUserPasses() {
+                axios.get(`/api/users/${this.userId}/passes`)
+                    .then(response => {
+                        this.userPasses = response.data;
+                    });
+            },
+            purchasePass() {
+                if (!this.selectedPassId) {
+                    alert('Please select a pass to purchase');
+                    return;
+                }
+                axios.post(`/api/users/${this.userId}/purchase`, {
+                    passId: this.selectedPassId,
+                    purchaseDate: this.purchaseDate
+                }).then(() => {
+                    this.fetchUserPasses();
+                });
+            },
+            navigateToHome() {
+                window.location.href = "/home.html";
+            },
+            navigateToPass() {
+                window.location.href = "/pass.html";
+            }
+        },
+    });
+</script>
+</body>
+</html>

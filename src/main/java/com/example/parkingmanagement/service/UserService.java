@@ -31,4 +31,8 @@ public class UserService {
     public void updateDiscountPercentage(int userId, int discountPercentage) {
         userDBManager.updateDiscountPercentage(userId, discountPercentage);
     }
+
+    public User getUserById(int userId) {
+        return userDBManager.getUserById(userId);
+    }
 }

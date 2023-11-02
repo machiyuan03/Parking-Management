@@ -32,3 +32,12 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      kill -9 $(pgrep -f 'Parking-Management-0.0.1-SNAPSHOT.jar')
+      
+      cd /home/ubuntu/azure/_work/1/a/target/
+      
+      nohup java -jar Parking-Management-0.0.1-SNAPSHOT.jar &

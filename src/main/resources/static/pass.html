@@ -13,6 +13,7 @@
     <!-- Element UI JS CDN with locale set to English -->
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.7.0/tailwind.min.css" rel="stylesheet">
     <style>
         html, body {
             margin: 0;
@@ -42,6 +43,179 @@
             margin: 0 auto;
             padding: 20px;
         }
+
+        html {
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
+        .background {
+            padding: 0 25px 25px;
+            position: relative;
+            width: 100%;
+        }
+
+        .background::after {
+            content: '';
+            background: #60a9ff;
+            background: -moz-linear-gradient(top, #60a9ff 0%, #4394f4 100%);
+            background: -webkit-linear-gradient(top, #60a9ff 0%, #4394f4 100%);
+            background: linear-gradient(to bottom, #60a9ff 0%, #4394f4 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#60a9ff', endColorstr='#4394f4', GradientType=0);
+            height: 350px;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .el-dialog__body{
+            padding-bottom: 60px;
+        }
+
+        @media (min-width: 900px) {
+            .background {
+                padding: 0 0 25px;
+            }
+        }
+
+        .container {
+            margin: 0 auto;
+            padding: 50px 0 0;
+            max-width: 960px;
+            width: 100%;
+        }
+
+        .panel {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px 25px;
+            position: relative;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .pricing-table {
+            box-shadow: 0px 10px 13px -6px rgba(0, 0, 0, 0.08), 0px 20px 31px 3px rgba(0, 0, 0, 0.09), 0px 8px 20px 7px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 900px) {
+            .pricing-table {
+                flex-direction: row;
+            }
+        }
+
+        .pricing-table * {
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .pricing-plan {
+            border-bottom: 1px solid #e1f1ff;
+            padding: 25px;
+        }
+
+        .pricing-plan:last-child {
+            border-bottom: none;
+        }
+
+        @media (min-width: 900px) {
+            .pricing-plan {
+                border-bottom: none;
+                border-right: 1px solid #e1f1ff;
+                flex-basis: 100%;
+                padding: 25px 50px;
+            }
+
+            .pricing-plan:last-child {
+                border-right: none;
+            }
+        }
+
+        .pricing-img {
+            margin-bottom: 25px;
+            max-width: 100%;
+        }
+
+        .pricing-header {
+            color: #888;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .pricing-features {
+            color: #016FF9;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin: 50px 0 25px;
+        }
+
+        .pricing-features-item {
+            border-top: 1px solid #e1f1ff;
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 15px 0;
+        }
+
+        .pricing-features-item:last-child {
+            border-bottom: 1px solid #e1f1ff;
+        }
+
+        .pricing-price {
+            color: #016FF9;
+            display: block;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .pricing-button {
+            border: 1px solid #9dd1ff;
+            border-radius: 10px;
+            color: #348EFE;
+            display: inline-block;
+            margin: 25px 0;
+            padding: 15px 35px;
+            text-decoration: none;
+            transition: all 150ms ease-in-out;
+        }
+
+        .pricing-button:hover,
+        .pricing-button:focus {
+            background-color: #e1f1ff;
+        }
+
+        .pricing-button.is-featured {
+            background-color: #48aaff;
+            color: #fff;
+        }
+
+        .pricing-button.is-featured:hover,
+        .pricing-button.is-featured:active {
+            background-color: #269aff;
+        }
+
+        .el-table-custom .el-table__header-wrapper {
+            background-color: #f8f9fa;
+        }
+
+        .el-table-custom .el-table__row {
+            border-bottom: 1px solid #e1f1ff;
+        }
+
+        .el-table-custom .el-table__row:hover {
+            background: #e1f1ff;
+        }
+
+        .el-table-custom .cell {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -52,43 +226,99 @@
                 <span style="margin-right: 16px; font-size: 1.25rem;">{{ welcomeMessage }}</span>
                 <el-button type="primary" @click="navigateToHome">Reserve a Spot</el-button>
                 <el-button type="primary" @click="navigateToPass">Buy a pass</el-button>
+                <el-button type="info" @click="showPasses">View Your Passes</el-button>
+                <el-button type="info" @click="showParkingHistory">Parking History</el-button>
             </div>
             <el-button type="danger" @click="handleLogout">Logout</el-button>
         </el-header>
 
         <el-main>
-            <h1>Buy Passes</h1>
-            <el-select v-model="selectedPassId" placeholder="Select a pass">
-                <el-option
-                        v-for="item in passes"
-                        :key="item.pass_id"
-                        :label="item.pass_type"
-                        :value="item.pass_id">
-                </el-option>
-            </el-select>
-            <el-date-picker
-                    v-model="purchaseDate"
-                    type="date"
-                    placeholder="Pick a day"
-                    :picker-options="pickerOptions">
-            </el-date-picker>
-            <el-button @click="purchasePass">Buy Pass</el-button>
+            <div class="py-24 bg-white">
+                <div class="max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 flex flex-col">
+                    <div class="text-center">
+                        <p class="mt-4 text-sm leading-7 text-gray-500 font-regular uppercase">
+                            PARKING PASS OPTIONS
+                        </p>
+                        <h3 class="text-3xl sm:text-5xl leading-normal font-extrabold tracking-tight text-gray-900">
+                            Choose Your <span class="text-indigo-600">Duration</span>
+                        </h3>
+                    </div>
 
-            <h2>Your Passes ({{ remainingPasses }} passes remaining, next expiry in {{ earliestExpiryTime }} days)</h2>
-            <el-table :data="userPasses">
-                <el-table-column prop="pass_type" label="Pass Type"></el-table-column>
-                <el-table-column label="Purchase Date">
-                    <template slot-scope="scope">
-                        {{ formatDate(scope.row.purchase_date) }}
-                    </template>
-                </el-table-column>
+                    <div class="mt-20">
+                        <ul class="sm:grid sm:grid-cols-2 md:grid-cols-3 sm:col-gap-10 sm:row-gap-10">
+                            <li v-for="(item, index) in passes" :key="item.pass_id" class="p-5 pb-10 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="flex items-center justify-center h-12 w-12 rounded-md text-indigo-500">
+                                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                                                 stroke="currentColor">
+                                                <path :d="svgPaths[index]" stroke-linecap="round"
+                                                      stroke-linejoin="round" stroke-width="2"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p class="mt-2 mb-4 text-base leading-6 text-gray-900 font-semibold">
+                                        {{ item.pass_type }} Pass
+                                    </p>
+                                    <h3 class="mt-2 mb-4 text-5xl leading-6 text-gray-900 font-bold">
+                                        ${{ item.price }} <!-- Assuming you have a price field in your pass object -->
+                                    </h3>
+                                    <!-- List features or details of the pass here -->
+                                    <ul class="my-10">
+                                        <li v-for="feature in item.features"
+                                            class="my-3 text-base leading-6 text-gray-500">
+                                            {{ feature }}
+                                        </li>
+                                    </ul>
+                                    <a href="#" @click="purchasePass(item.pass_id)"
+                                       class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-10 rounded-full">
+                                        Buy
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-                <el-table-column label="Expiry Date">
-                    <template slot-scope="scope">
-                        {{ formatDate(scope.row.expiry_date) }}
-                    </template>
-                </el-table-column>
-            </el-table>
+            <el-dialog :visible.sync="showPassesDialog" width="70%" @close="closePassesDialog">
+                <div class="text-center" style="padding-bottom: 20px">
+                    <h2 class="text-3xl sm:text-4xl leading-normal font-extrabold tracking-tight text-gray-900 mb-4">
+                        Your Passes
+                        <span class="text-lg text-indigo-500">({{ remainingPasses }} passes remaining, next expiry in {{ earliestExpiryTime }} days)</span>
+                    </h2>
+                </div>
+
+                <el-table :data="userPasses" stripe class="shadow-lg rounded-md">
+                    <el-table-column prop="pass_type" label="Pass Type"></el-table-column>
+
+                    <el-table-column label="Purchase Date">
+                        <template slot-scope="scope">
+                            {{ formatDate(scope.row.purchase_date) }}
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="Expiry Date">
+                        <template slot-scope="scope">
+                            {{ formatDate(scope.row.expiry_date) }}
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-dialog>
+
+            <el-dialog :visible.sync="showParkingHistoryDialog" width="70%" @close="closeParkingHistoryDialog">
+                <div class="text-center" style="padding-bottom: 20px">
+                    <h2 class="text-3xl sm:text-4xl leading-normal font-extrabold tracking-tight text-gray-900 mb-4">
+                        Your Parking History
+                    </h2>
+                </div>
+
+                <el-table :data="userParkings" stripe class="shadow-lg rounded-md">
+                    <el-table-column prop="id" label="Parking ID"></el-table-column>
+                    <el-table-column prop="time_slot" label="Time Slot"></el-table-column>
+                    <el-table-column prop="numbers" label="Numbers"></el-table-column>
+                </el-table>
+            </el-dialog>
         </el-main>
     </el-container>
 </div>
@@ -96,13 +326,53 @@
     // Set Element UI's locale to English
     ELEMENT.locale(ELEMENT.lang.en);
 
+    const { Message } = ELEMENT;
+
     var app = new Vue({
         el: '#app',
         data: {
-            passes: [],
+            showParkingHistoryDialog: false,
+            userParkings: [],
+            showPassesDialog: false,
+            svgPaths: [
+                "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9",
+                "M13 10V3L4 14h7v7l9-11h-7z",
+                "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+            ],
+            passes: [
+                {
+                    "pass_id": 1,
+                    "pass_type": "Week",
+                    "price": 29.99,
+                    "total_duration": 7,
+                    features: [
+                        "Valid for 7 days",
+                        "Unlimited entries/exits",
+                    ],
+                },
+                {
+                    "pass_id": 2,
+                    "pass_type": "Month",
+                    "price": 99.99,
+                    "total_duration": 30,
+                    features: [
+                        "Valid for 7 days",
+                        "Unlimited entries/exits",
+                    ],
+                },
+                {
+                    "pass_id": 3,
+                    "pass_type": "Half-Year",
+                    "price": 499.99,
+                    "total_duration": 180,
+                    features: [
+                        "Valid for 7 days",
+                        "Unlimited entries/exits",
+                    ],
+                }
+            ],
             userPasses: [],
             userId: localStorage.getItem('userId'), // Fetching userId from localStorage
-            selectedPassId: null,
             purchaseDate: new Date(),
             welcomeMessage: '',
             pickerOptions: {
@@ -115,7 +385,7 @@
             }
         },
         mounted() {
-            this.fetchAllPasses();
+            // this.fetchAllPasses();
             this.fetchUserPasses();
             this.displayUserName();
         },
@@ -140,6 +410,12 @@
             }
         },
         methods: {
+            showPasses() {
+                this.showPassesDialog = true;
+            },
+            closePassesDialog() {
+                this.showPassesDialog = false;
+            },
             handleLogout() {
                 localStorage.clear();
                 window.location.href = "/index.html";
@@ -154,28 +430,34 @@
                 const options = {year: 'numeric', month: 'long', day: 'numeric'};
                 return new Date(dateString).toLocaleDateString(undefined, options);
             },
-            fetchAllPasses() {
-                axios.get('/api/users/passes')
-                    .then(response => {
-                        this.passes = response.data;
-                    });
-            },
+            // fetchAllPasses() {
+            //     axios.get('/api/users/passes')
+            //         .then(response => {
+            //             this.passes = response.data;
+            //         });
+            // },
             fetchUserPasses() {
                 axios.get(`/api/users/${this.userId}/passes`)
                     .then(response => {
                         this.userPasses = response.data;
                     });
             },
-            purchasePass() {
-                if (!this.selectedPassId) {
-                    alert('Please select a pass to purchase');
-                    return;
-                }
+            purchasePass(pass_id) {
+                let purchasedPass = this.passes.find(pass => pass.pass_id === pass_id);
                 axios.post(`/api/users/${this.userId}/purchase`, {
-                    passId: this.selectedPassId,
+                    passId: pass_id,
                     purchaseDate: this.purchaseDate
                 }).then(() => {
                     this.fetchUserPasses();
+                    // Show success notification
+                    this.showSuccessNotification(purchasedPass.pass_type);
+                });
+            },
+            showSuccessNotification(passType) {
+                this.$message({
+                    title: 'Success',
+                    message: `You have successfully purchased a ${passType} Pass!`,
+                    type: 'success'
                 });
             },
             navigateToHome() {
@@ -183,6 +465,19 @@
             },
             navigateToPass() {
                 window.location.href = "/pass.html";
+            },
+            showParkingHistory() {
+                this.showParkingHistoryDialog = true;
+                this.fetchUserParkings();
+            },
+            closeParkingHistoryDialog() {
+                this.showParkingHistoryDialog = false;
+            },
+            fetchUserParkings() {
+                axios.get(`/parking/${this.userId}`)
+                    .then(response => {
+                        this.userParkings = response.data;
+                    });
             }
         },
     });

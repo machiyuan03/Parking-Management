@@ -2,25 +2,21 @@ package com.example.parkingmanagement;
 
 import com.example.parkingmanagement.model.Spot;
 import com.example.parkingmanagement.service.SpotService;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@FixMethodOrder(MethodSorters.NAME_ASCENDING) // To execute tests in order by name
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SpotTest {
     @Autowired
     private SpotService spotService;
 
+    @Order(1)
     @Test
     public void test1AddSpot() {
         Spot newSpot = new Spot();
@@ -36,6 +32,7 @@ public class SpotTest {
         spotService.addSpot(newSpot);
     }
 
+    @Order (2)
     @Test
     public void test2QuerySpot() {
         // Assume the last added spot has the maximum ID
@@ -45,6 +42,7 @@ public class SpotTest {
         assertEquals("Sample Location", lastAddedSpot.getLocation());
     }
 
+    @Order (3)
     @Test
     public void test3ModifySpot() {
         List<Spot> spots = spotService.getAllSpots();
@@ -62,6 +60,7 @@ public class SpotTest {
         spotService.adjustSpot(lastAddedSpot);
     }
 
+    @Order (4)
     @Test
     public void test4DeleteSpot() {
         List<Spot> spots = spotService.getAllSpots();

@@ -242,6 +242,12 @@
                         <h3 class="text-3xl sm:text-5xl leading-normal font-extrabold tracking-tight text-gray-900">
                             Choose Your <span class="text-indigo-600">Duration</span>
                         </h3>
+                        Choose your start date:
+                        <el-date-picker
+                                v-model="purchaseDate"
+                                type="date"
+                                placeholder="Pick a day">
+                        </el-date-picker>
                     </div>
 
                     <div class="mt-20">
@@ -443,10 +449,19 @@
                     });
             },
             purchasePass(pass_id) {
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);  // Reset the time part, to ensure we compare only the date
+                if (this.purchaseDate < today) {
+                    Message.error('Selected date is earlier than today! Please choose a valid date.');
+                    return;
+                }
+
+                let adjustedDate = this.adjustDateForUTC(this.purchaseDate);
+
                 let purchasedPass = this.passes.find(pass => pass.pass_id === pass_id);
                 axios.post(`/api/users/${this.userId}/purchase`, {
                     passId: pass_id,
-                    purchaseDate: this.purchaseDate
+                    purchaseDate: adjustedDate
                 }).then(() => {
                     this.fetchUserPasses();
                     // Show success notification
@@ -478,6 +493,9 @@
                     .then(response => {
                         this.userParkings = response.data;
                     });
+            },
+            adjustDateForUTC(date) {
+                return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
             }
         },
     });

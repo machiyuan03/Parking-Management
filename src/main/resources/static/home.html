@@ -1,378 +1,378 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservation List</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- Axios library -->
-    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        // Function to handle logout
-        function handleLogout() {
-            localStorage.clear(); // Clear the localStorage
-            window.location.href = "/index.html"; // Navigate to index.html
-        }
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Reservation List</title>-->
+<!--    &lt;!&ndash; Bootstrap CSS &ndash;&gt;-->
+<!--    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    &lt;!&ndash; jQuery library &ndash;&gt;-->
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+<!--    &lt;!&ndash; Axios library &ndash;&gt;-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>-->
+<!--    &lt;!&ndash; Bootstrap JS &ndash;&gt;-->
+<!--    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
+<!--    <script>-->
+<!--        // Function to handle logout-->
+<!--        function handleLogout() {-->
+<!--            localStorage.clear(); // Clear the localStorage-->
+<!--            window.location.href = "/index.html"; // Navigate to index.html-->
+<!--        }-->
 
-        // Function to display user's name
-        function displayUserName() {
-            const userName = localStorage.getItem('username');
-            if (userName) {
-                document.getElementById('userNameDisplay').textContent = `Welcome, ${userName}`;
-            }
-        }
-    </script>
-    <style>
-        .form-check-inline {
-            margin-right: 20px;
-        }
-        .btn-secondary {
-            vertical-align: middle;
-        }
-    </style>
-</head>
-<body onload="displayUserName()">
-<!-- Navigation bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <span id="userNameDisplay" class="navbar-brand"></span>
-    <a href="/home.html" class="btn btn-primary mr-2">Reserve a Spot</a>
-    <a href="/pass.html" class="btn btn-primary mr-2">Buy a pass</a>
-    <button class="btn btn-danger ml-auto" onclick="handleLogout()">Logout</button>
-</nav>
-
-
-<div class="container mt-5">
-    <h2>Available Spots</h2>
-    <table class="table table-bordered" id="spotsTable">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Location</th>
-            <th>Price/hr</th>
-            <th>Price/day</th>
-            <th>Price/night</th>
-            <th>S Spot</th>
-            <th>M Spot</th>
-            <th>L Spot</th>
-            <th>Pass Available</th>
-            <th>Discount Available</th>
-        </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <!-- Add this section just above the "spotsTable" -->
-    <div class="mt-4 mb-3">
-        <h4>Filter Options:</h4>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="filterPassAvailable">
-            <label class="form-check-label" for="filterPassAvailable">Show only spots with Pass Available</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="filterDiscountAvailable">
-            <label class="form-check-label" for="filterDiscountAvailable">Show only spots with Discount Available</label>
-        </div>
-        <button class="btn btn-secondary ml-3" onclick="applyFilters()">Apply Filters</button>
-    </div>
+<!--        // Function to display user's name-->
+<!--        function displayUserName() {-->
+<!--            const userName = localStorage.getItem('username');-->
+<!--            if (userName) {-->
+<!--                document.getElementById('userNameDisplay').textContent = `Welcome, ${userName}`;-->
+<!--            }-->
+<!--        }-->
+<!--    </script>-->
+<!--    <style>-->
+<!--        .form-check-inline {-->
+<!--            margin-right: 20px;-->
+<!--        }-->
+<!--        .btn-secondary {-->
+<!--            vertical-align: middle;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body onload="displayUserName()">-->
+<!--&lt;!&ndash; Navigation bar &ndash;&gt;-->
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-light">-->
+<!--    <span id="userNameDisplay" class="navbar-brand"></span>-->
+<!--    <a href="/home.html" class="btn btn-primary mr-2">Reserve a Spot</a>-->
+<!--    <a href="/pass.html" class="btn btn-primary mr-2">Buy a pass</a>-->
+<!--    <button class="btn btn-danger ml-auto" onclick="handleLogout()">Logout</button>-->
+<!--</nav>-->
 
 
-    <h2>Reserve a Spot</h2>
-    <form style="margin-bottom: 16px" id="reservationForm">
-        <div class="form-group">
-            <label>Select a Spot:</label>
-            <select class="form-control" id="spotId"></select>
-        </div>
+<!--<div class="container mt-5">-->
+<!--    <h2>Available Spots</h2>-->
+<!--    <table class="table table-bordered" id="spotsTable">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>ID</th>-->
+<!--            <th>Location</th>-->
+<!--            <th>Price/hr</th>-->
+<!--            <th>Price/day</th>-->
+<!--            <th>Price/night</th>-->
+<!--            <th>S Spot</th>-->
+<!--            <th>M Spot</th>-->
+<!--            <th>L Spot</th>-->
+<!--            <th>Pass Available</th>-->
+<!--            <th>Discount Available</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody></tbody>-->
+<!--    </table>-->
 
-        <div class="form-group">
-            <label for="startTime">Start Time:</label>
-            <input type="datetime-local" class="form-control" id="startTime" required>
-        </div>
+<!--    &lt;!&ndash; Add this section just above the "spotsTable" &ndash;&gt;-->
+<!--    <div class="mt-4 mb-3">-->
+<!--        <h4>Filter Options:</h4>-->
+<!--        <div class="form-check form-check-inline">-->
+<!--            <input class="form-check-input" type="checkbox" id="filterPassAvailable">-->
+<!--            <label class="form-check-label" for="filterPassAvailable">Show only spots with Pass Available</label>-->
+<!--        </div>-->
+<!--        <div class="form-check form-check-inline">-->
+<!--            <input class="form-check-input" type="checkbox" id="filterDiscountAvailable">-->
+<!--            <label class="form-check-label" for="filterDiscountAvailable">Show only spots with Discount Available</label>-->
+<!--        </div>-->
+<!--        <button class="btn btn-secondary ml-3" onclick="applyFilters()">Apply Filters</button>-->
+<!--    </div>-->
 
-        <div class="form-group">
-            <label for="endTime">End Time:</label>
-            <input type="datetime-local" class="form-control" id="endTime" required>
-        </div>
-        <!-- Add more fields as needed -->
-        <button type="submit" class="btn btn-primary">Reserve</button>
-    </form>
 
-    <h2>Your Reservations</h2>
-    <table class="table table-bordered" id="userReservationsTable">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Location</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
+<!--    <h2>Reserve a Spot</h2>-->
+<!--    <form style="margin-bottom: 16px" id="reservationForm">-->
+<!--        <div class="form-group">-->
+<!--            <label>Select a Spot:</label>-->
+<!--            <select class="form-control" id="spotId"></select>-->
+<!--        </div>-->
 
-<!-- Modal for editing a reservation -->
-<div class="modal" tabindex="-1" id="editModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Reservation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <!-- Inside the modal-body in the Edit Modal -->
-            <div class="modal-body">
-                <form id="editReservationForm">
-                    <div class="form-group">
-                        <label for="editSpotId">Edit Spot id:</label>
-                        <input class="form-control" id="editSpotId" disabled readonly>
-                    </div>
+<!--        <div class="form-group">-->
+<!--            <label for="startTime">Start Time:</label>-->
+<!--            <input type="datetime-local" class="form-control" id="startTime" required>-->
+<!--        </div>-->
 
-                    <div class="form-group">
-                        <label for="editStartTime">Start Time:</label>
-                        <input type="datetime-local" class="form-control" id="editStartTime" required>
-                    </div>
+<!--        <div class="form-group">-->
+<!--            <label for="endTime">End Time:</label>-->
+<!--            <input type="datetime-local" class="form-control" id="endTime" required>-->
+<!--        </div>-->
+<!--        &lt;!&ndash; Add more fields as needed &ndash;&gt;-->
+<!--        <button type="submit" class="btn btn-primary">Reserve</button>-->
+<!--    </form>-->
 
-                    <div class="form-group">
-                        <label for="editEndTime">End Time:</label>
-                        <input type="datetime-local" class="form-control" id="editEndTime" required>
-                    </div>
-                    <!-- Add more fields if needed for editing -->
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="btnSaveChanges">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
+<!--    <h2>Your Reservations</h2>-->
+<!--    <table class="table table-bordered" id="userReservationsTable">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>ID</th>-->
+<!--            <th>Location</th>-->
+<!--            <th>Start Time</th>-->
+<!--            <th>End Time</th>-->
+<!--            <th>Actions</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody></tbody>-->
+<!--    </table>-->
+<!--</div>-->
 
-<script>
-    let currentReservationId = null;
+<!--&lt;!&ndash; Modal for editing a reservation &ndash;&gt;-->
+<!--<div class="modal" tabindex="-1" id="editModal">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title">Edit Reservation</h5>-->
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                    <span aria-hidden="true">&times;</span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            &lt;!&ndash; Inside the modal-body in the Edit Modal &ndash;&gt;-->
+<!--            <div class="modal-body">-->
+<!--                <form id="editReservationForm">-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="editSpotId">Edit Spot id:</label>-->
+<!--                        <input class="form-control" id="editSpotId" disabled readonly>-->
+<!--                    </div>-->
 
-    function applyFilters() {
-        const filterPass = document.getElementById('filterPassAvailable').checked;
-        const filterDiscount = document.getElementById('filterDiscountAvailable').checked;
+<!--                    <div class="form-group">-->
+<!--                        <label for="editStartTime">Start Time:</label>-->
+<!--                        <input type="datetime-local" class="form-control" id="editStartTime" required>-->
+<!--                    </div>-->
 
-        // Fetch all Spots
-        axios.get('/getAllSpot')
-            .then(response => {
-                const spots = response.data;
-                let rows = '';
-                spots.forEach(spot => {
-                    if ((filterPass && spot.passAvailable !== 1) ||
-                        (filterDiscount && spot.discountAvailable !== 1)) {
-                        // Skip this spot as it doesn't meet the filter criteria
-                        return;
-                    }
-                    rows += `
-                    <tr>
-                        <td>${spot.id}</td>
-                        <td>${spot.location}</td>
-                        <td>${spot.priceRatePH}</td>
-                        <td>${spot.priceRatePD}</td>
-                        <td>${spot.priceRateON}</td>
-                        <td>${spot.sSpot}</td>
-                        <td>${spot.mSpot}</td>
-                        <td>${spot.lSpot}</td>
-                        <td>${spot.passAvailable === 1 ? 'Yes' : 'No'}</td>
-                        <td>${spot.discountAvailable === 1 ? 'Yes' : 'No'}</td>
-                    </tr>
-                `;
-                });
-                document.querySelector('#spotsTable tbody').innerHTML = rows;
-            })
-            .catch(error => {
-                console.error('Error fetching spots:', error);
-            });
-    }
+<!--                    <div class="form-group">-->
+<!--                        <label for="editEndTime">End Time:</label>-->
+<!--                        <input type="datetime-local" class="form-control" id="editEndTime" required>-->
+<!--                    </div>-->
+<!--                    &lt;!&ndash; Add more fields if needed for editing &ndash;&gt;-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--                <button type="button" class="btn btn-primary" id="btnSaveChanges">Save changes</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
-    function fetchAndDisplayReservations() {
-        axios.get('/getReservationsByUser', {params: {userId: localStorage.getItem('userId')}})
-            .then(response => {
-                const reservations = response.data;
-                let rows = '';
-                let fetchSpotPromises = [];
+<!--<script>-->
+<!--    let currentReservationId = null;-->
 
-                reservations.forEach(reservation => {
-                    // For each reservation, make a request to get the spot details
-                    fetchSpotPromises.push(axios.get('/findSpotById', {params: {id: reservation.spotId}}));
-                });
+<!--    function applyFilters() {-->
+<!--        const filterPass = document.getElementById('filterPassAvailable').checked;-->
+<!--        const filterDiscount = document.getElementById('filterDiscountAvailable').checked;-->
 
-                // Using Promise.all to wait for all spot details to be fetched
-                return Promise.all(fetchSpotPromises).then(spotResponses => {
-                    spotResponses.forEach((spotResponse, index) => {
+<!--        // Fetch all Spots-->
+<!--        axios.get('/getAllSpot')-->
+<!--            .then(response => {-->
+<!--                const spots = response.data;-->
+<!--                let rows = '';-->
+<!--                spots.forEach(spot => {-->
+<!--                    if ((filterPass && spot.passAvailable !== 1) ||-->
+<!--                        (filterDiscount && spot.discountAvailable !== 1)) {-->
+<!--                        // Skip this spot as it doesn't meet the filter criteria-->
+<!--                        return;-->
+<!--                    }-->
+<!--                    rows += `-->
+<!--                    <tr>-->
+<!--                        <td>${spot.id}</td>-->
+<!--                        <td>${spot.location}</td>-->
+<!--                        <td>${spot.priceRatePH}</td>-->
+<!--                        <td>${spot.priceRatePD}</td>-->
+<!--                        <td>${spot.priceRateON}</td>-->
+<!--                        <td>${spot.sSpot}</td>-->
+<!--                        <td>${spot.mSpot}</td>-->
+<!--                        <td>${spot.lSpot}</td>-->
+<!--                        <td>${spot.passAvailable === 1 ? 'Yes' : 'No'}</td>-->
+<!--                        <td>${spot.discountAvailable === 1 ? 'Yes' : 'No'}</td>-->
+<!--                    </tr>-->
+<!--                `;-->
+<!--                });-->
+<!--                document.querySelector('#spotsTable tbody').innerHTML = rows;-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error('Error fetching spots:', error);-->
+<!--            });-->
+<!--    }-->
 
-                        const spot = spotResponse.data;
-                        const reservation = reservations[index];
+<!--    function fetchAndDisplayReservations() {-->
+<!--        axios.get('/getReservationsByUser', {params: {userId: localStorage.getItem('userId')}})-->
+<!--            .then(response => {-->
+<!--                const reservations = response.data;-->
+<!--                let rows = '';-->
+<!--                let fetchSpotPromises = [];-->
 
-                        rows += `
-                    <tr>
-                        <td>${reservation.reservationId}</td>
-                        <td>${spot.location}</td>
-                        <td>${reservation.startTime}</td>
-                        <td>${reservation.endTime}</td>
-                        <td>
-                            <button class="btn btn-warning btn-edit" data-id="${reservation.reservationId}">Edit</button>
-                            <button class="btn btn-danger btn-delete" data-id="${reservation.reservationId}">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                    });
-                    $('#userReservationsTable tbody').html(rows);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching reservations or spots:', error);
-            });
-    }
+<!--                reservations.forEach(reservation => {-->
+<!--                    // For each reservation, make a request to get the spot details-->
+<!--                    fetchSpotPromises.push(axios.get('/findSpotById', {params: {id: reservation.spotId}}));-->
+<!--                });-->
 
-    $(document).ready(function() {
-        // Check user login status
-        if (!localStorage.getItem('userId')) {
-            alert('Please log in first.');
-            // Redirect user to login page
-            window.location.href = '/index.html';
-        }
+<!--                // Using Promise.all to wait for all spot details to be fetched-->
+<!--                return Promise.all(fetchSpotPromises).then(spotResponses => {-->
+<!--                    spotResponses.forEach((spotResponse, index) => {-->
 
-        // Fetch all Spots
-        axios.get('/getAllSpot')
-            .then(response => {
-                const spots = response.data;
-                let rows = '';
-                let selectOptions = '';
-                spots.forEach(spot => {
-                    rows += `
-                        <tr>
-                            <td>${spot.id}</td>
-                            <td>${spot.location}</td>
-                            <td>${spot.priceRatePH}</td>
-                            <td>${spot.priceRatePD}</td>
-                            <td>${spot.priceRateON}</td>
-                            <td>${spot.sSpot}</td>
-                            <td>${spot.mSpot}</td>
-                            <td>${spot.lSpot}</td>
-                            <td>${spot.passAvailable === 1 ? 'Yes' : 'No'}</td>
-                            <td>${spot.discountAvailable === 1 ? 'Yes' : 'No'}</td>
-                        </tr>
-                    `;
-                    selectOptions += `<option value="${spot.id}">${spot.location}</option>`;
-                });
-                $('#spotsTable tbody').html(rows);
-                $('#spotId').html(selectOptions);
-            })
-            .catch(error => {
-                console.error('Error fetching spots:', error);
-            });
+<!--                        const spot = spotResponse.data;-->
+<!--                        const reservation = reservations[index];-->
 
-        // Handle reservation
-        $('#reservationForm').submit(function(event) {
-            event.preventDefault();
+<!--                        rows += `-->
+<!--                    <tr>-->
+<!--                        <td>${reservation.reservationId}</td>-->
+<!--                        <td>${spot.location}</td>-->
+<!--                        <td>${reservation.startTime}</td>-->
+<!--                        <td>${reservation.endTime}</td>-->
+<!--                        <td>-->
+<!--                            <button class="btn btn-warning btn-edit" data-id="${reservation.reservationId}">Edit</button>-->
+<!--                            <button class="btn btn-danger btn-delete" data-id="${reservation.reservationId}">Delete</button>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                `;-->
+<!--                    });-->
+<!--                    $('#userReservationsTable tbody').html(rows);-->
+<!--                });-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error('Error fetching reservations or spots:', error);-->
+<!--            });-->
+<!--    }-->
 
-            const userId = localStorage.getItem('userId');
-            const spotId = $('#spotId').val();
-            const startTime = $('#startTime').val();
-            const endTime = $('#endTime').val();
-            const currentDate = new Date();
+<!--    $(document).ready(function() {-->
+<!--        // Check user login status-->
+<!--        if (!localStorage.getItem('userId')) {-->
+<!--            alert('Please log in first.');-->
+<!--            // Redirect user to login page-->
+<!--            window.location.href = '/index.html';-->
+<!--        }-->
 
-            // Check if startTime is earlier than today
-            if (new Date($('#startTime').val()) < currentDate) {
-                alert('Start Time cannot be earlier than today.');
-                return; // Exit the function to prevent form submission
-            }
+<!--        // Fetch all Spots-->
+<!--        axios.get('/getAllSpot')-->
+<!--            .then(response => {-->
+<!--                const spots = response.data;-->
+<!--                let rows = '';-->
+<!--                let selectOptions = '';-->
+<!--                spots.forEach(spot => {-->
+<!--                    rows += `-->
+<!--                        <tr>-->
+<!--                            <td>${spot.id}</td>-->
+<!--                            <td>${spot.location}</td>-->
+<!--                            <td>${spot.priceRatePH}</td>-->
+<!--                            <td>${spot.priceRatePD}</td>-->
+<!--                            <td>${spot.priceRateON}</td>-->
+<!--                            <td>${spot.sSpot}</td>-->
+<!--                            <td>${spot.mSpot}</td>-->
+<!--                            <td>${spot.lSpot}</td>-->
+<!--                            <td>${spot.passAvailable === 1 ? 'Yes' : 'No'}</td>-->
+<!--                            <td>${spot.discountAvailable === 1 ? 'Yes' : 'No'}</td>-->
+<!--                        </tr>-->
+<!--                    `;-->
+<!--                    selectOptions += `<option value="${spot.id}">${spot.location}</option>`;-->
+<!--                });-->
+<!--                $('#spotsTable tbody').html(rows);-->
+<!--                $('#spotId').html(selectOptions);-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error('Error fetching spots:', error);-->
+<!--            });-->
 
-            // Check if endTime is earlier than startTime
-            if (endTime <= startTime) {
-                alert('End Time must be after Start Time.');
-                return; // Exit the function to prevent form submission
-            }
+<!--        // Handle reservation-->
+<!--        $('#reservationForm').submit(function(event) {-->
+<!--            event.preventDefault();-->
 
-            const reservationData = {
-                reservationId: 0,
-                userId: userId,
-                spotId: spotId,
-                startTime: startTime,
-                endTime: endTime
-            };
+<!--            const userId = localStorage.getItem('userId');-->
+<!--            const spotId = $('#spotId').val();-->
+<!--            const startTime = $('#startTime').val();-->
+<!--            const endTime = $('#endTime').val();-->
+<!--            const currentDate = new Date();-->
 
-            axios.post('/addReservation', reservationData)
-                .then(response => {
-                    alert('Reservation successful.');
-                    fetchAndDisplayReservations();
-                })
-                .catch(error => {
-                    alert('Failed to reserve. Try again later.');
-                });
-        });
+<!--            // Check if startTime is earlier than today-->
+<!--            if (new Date($('#startTime').val()) < currentDate) {-->
+<!--                alert('Start Time cannot be earlier than today.');-->
+<!--                return; // Exit the function to prevent form submission-->
+<!--            }-->
 
-        fetchAndDisplayReservations();
+<!--            // Check if endTime is earlier than startTime-->
+<!--            if (endTime <= startTime) {-->
+<!--                alert('End Time must be after Start Time.');-->
+<!--                return; // Exit the function to prevent form submission-->
+<!--            }-->
 
-        // Edit reservation
-        $(document).on('click', '.btn-edit', function() {
-            const reservationId = $(this).data('id');
-            currentReservationId = reservationId;
+<!--            const reservationData = {-->
+<!--                reservationId: 0,-->
+<!--                userId: userId,-->
+<!--                spotId: spotId,-->
+<!--                startTime: startTime,-->
+<!--                endTime: endTime-->
+<!--            };-->
 
-            // Fetch the reservation details
-            axios.get('/findReservationById', {params: {reservationId: reservationId}})
-                .then(response => {
-                    const reservation = response.data;
-                    $('#editSpotId').val(reservation.spotId);
-                    $('#editStartTime').val(reservation.startTime);
-                    $('#editEndTime').val(reservation.endTime);
+<!--            axios.post('/addReservation', reservationData)-->
+<!--                .then(response => {-->
+<!--                    alert('Reservation successful.');-->
+<!--                    fetchAndDisplayReservations();-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                    alert('Failed to reserve. Try again later.');-->
+<!--                });-->
+<!--        });-->
 
-                    // Show the modal
-                    $('#editModal').modal('show');
-                })
-                .catch(error => {
-                    console.error('Error fetching reservation details:', error);
-                });
-        });
+<!--        fetchAndDisplayReservations();-->
 
-        // Save changes in the edit modal
-        $('#btnSaveChanges').click(function() {
-            const updatedData = {
-                reservationId: currentReservationId,
-                userId : localStorage.getItem('userId'),
-                spotId: $('#editSpotId').val(),
-                startTime: $('#editStartTime').val(),
-                endTime: $('#editEndTime').val()
-            };
+<!--        // Edit reservation-->
+<!--        $(document).on('click', '.btn-edit', function() {-->
+<!--            const reservationId = $(this).data('id');-->
+<!--            currentReservationId = reservationId;-->
 
-            axios.post('/modifyReservation', updatedData)
-                .then(response => {
-                    alert('Reservation updated successfully.');
-                    $('#editModal').modal('hide');  // Close the modal
-                    fetchAndDisplayReservations();  // Refresh the reservations table
-                })
-                .catch(error => {
-                    alert('Failed to update. Try again later.');
-                });
-        });
+<!--            // Fetch the reservation details-->
+<!--            axios.get('/findReservationById', {params: {reservationId: reservationId}})-->
+<!--                .then(response => {-->
+<!--                    const reservation = response.data;-->
+<!--                    $('#editSpotId').val(reservation.spotId);-->
+<!--                    $('#editStartTime').val(reservation.startTime);-->
+<!--                    $('#editEndTime').val(reservation.endTime);-->
 
-        // Delete reservation
-        $(document).on('click', '.btn-delete', function() {
-            const reservationId = $(this).data('id');
+<!--                    // Show the modal-->
+<!--                    $('#editModal').modal('show');-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                    console.error('Error fetching reservation details:', error);-->
+<!--                });-->
+<!--        });-->
 
-            // Using request parameters instead of request body
-            axios.post('/deleteReservation', null, {params: {reservationId: reservationId}})
-                .then(response => {
-                    alert('Reservation deleted successfully.');
-                    // Refresh the reservations table
-                    fetchAndDisplayReservations();
-                })
-                .catch(error => {
-                    alert('Failed to delete. Try again later.');
-                });
-        });
-    });
-</script>
+<!--        // Save changes in the edit modal-->
+<!--        $('#btnSaveChanges').click(function() {-->
+<!--            const updatedData = {-->
+<!--                reservationId: currentReservationId,-->
+<!--                userId : localStorage.getItem('userId'),-->
+<!--                spotId: $('#editSpotId').val(),-->
+<!--                startTime: $('#editStartTime').val(),-->
+<!--                endTime: $('#editEndTime').val()-->
+<!--            };-->
 
-</body>
-</html>
+<!--            axios.post('/modifyReservation', updatedData)-->
+<!--                .then(response => {-->
+<!--                    alert('Reservation updated successfully.');-->
+<!--                    $('#editModal').modal('hide');  // Close the modal-->
+<!--                    fetchAndDisplayReservations();  // Refresh the reservations table-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                    alert('Failed to update. Try again later.');-->
+<!--                });-->
+<!--        });-->
+
+<!--        // Delete reservation-->
+<!--        $(document).on('click', '.btn-delete', function() {-->
+<!--            const reservationId = $(this).data('id');-->
+
+<!--            // Using request parameters instead of request body-->
+<!--            axios.post('/deleteReservation', null, {params: {reservationId: reservationId}})-->
+<!--                .then(response => {-->
+<!--                    alert('Reservation deleted successfully.');-->
+<!--                    // Refresh the reservations table-->
+<!--                    fetchAndDisplayReservations();-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                    alert('Failed to delete. Try again later.');-->
+<!--                });-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->

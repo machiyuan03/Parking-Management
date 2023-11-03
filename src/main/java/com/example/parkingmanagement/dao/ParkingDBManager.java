@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-//@Mapper
-//public interface ParkingDBManager {
-//    @Select("SELECT * FROM parking WHERE user_id = #{user_id}")
-//    List<Parking> getParkingById(@Param("user_id") int user_id);
-//}
+@Mapper
+public interface ParkingDBManager {
+    @Select("SELECT * FROM parking WHERE user_id = #{user_id}")
+    List<Parking> getParkingById(@Param("user_id") int user_id);
+}
